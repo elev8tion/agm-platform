@@ -5,45 +5,35 @@ from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
+from api.schemas.agent_requests import ResearchRequest, WriteRequest, OptimizeRequest, ReviewRequest
+from api.schemas.agent_responses import ResearchResponse, WriteResponse, OptimizeResponse, ReviewResponse
 from config.database import get_db
-from schemas.agent_schemas import (
-    ResearchRequest,
-    WriteRequest,
-    AgentResponseBase,
-    JobResponse
-)
-from models.agent_job import AgentType
+from api.dependencies import get_current_user
 from services.agent_service import agent_service
+from models.agent_job import AgentType
 from loguru import logger
 
 
-router = APIRouter(prefix="/api/agents/seo", tags=["SEO Writer"])
+router = APIRouter(prefix="/api/agents/seo", tags=["SEO Agent"])
 
 
-async def execute_job_background(job_id: int):
-    """Background task to execute job"""
-    from config.database import AsyncSessionLocal
-
-    async with AsyncSessionLocal() as db:
-        job = await agent_service.get_job(db, job_id)
-        if job:
-            try:
-                await agent_service.execute_job(db, job)
-            except Exception as e:
-                logger.error(f"Background job {job_id} failed: {e}")
-
-
-@router.post("/research", response_model=AgentResponseBase)
+@router.post("/research", response_model=ResearchResponse, status_code=status.HTTP_202_ACCEPTED)
 async def research_topic(
     request: ResearchRequest,
     background_tasks: BackgroundTasks,
-    db: Annotated[AsyncSession, Depends(get_db)]
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[dict, Depends(get_current_user)] = None
 ):
     """
     Research a topic and generate content outline
 
-    Creates a background job to research the topic using AI.
-    Returns immediately with job ID to track progress.
+    This endpoint queues a research job that:
+    - Performs web search for the topic
+    - Analyzes top-ranking content
+    - Generates comprehensive outline
+    - Identifies target keywords
+
+    Returns immediately with job_id. Use WebSocket or polling to get results.
     """
     try:
         # Create job
@@ -56,35 +46,47 @@ async def research_topic(
             }
         )
 
-        # Execute in background
-        background_tasks.add_task(execute_job_background, job.id)
+        # Queue background task
+        async def execute_research():
+            from config.database import AsyncSessionLocal
+            async with AsyncSessionLocal() as session:
+                await agent_service.execute_job(session, job)
 
-        return AgentResponseBase(
+        background_tasks.add_task(execute_research)
+
+        return ResearchResponse(
             success=True,
-            message="Research job created",
+            message=f"Research job queued for topic: {request.topic}",
             job_id=str(job.id),
-            status="pending"
+            status="queued",
+            created_at=job.created_at
         )
 
     except Exception as e:
-        logger.error(f"Failed to create research job: {e}")
+        logger.error(f"Failed to queue research job: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            detail=f"Failed to queue research job: {str(e)}"
         )
 
 
-@router.post("/write", response_model=AgentResponseBase)
+@router.post("/write", response_model=WriteResponse, status_code=status.HTTP_202_ACCEPTED)
 async def write_content(
     request: WriteRequest,
     background_tasks: BackgroundTasks,
-    db: Annotated[AsyncSession, Depends(get_db)]
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[dict, Depends(get_current_user)] = None
 ):
     """
     Write SEO-optimized content
 
-    Creates a background job to write content using AI.
-    Returns immediately with job ID to track progress.
+    This endpoint queues a content writing job that:
+    - Generates draft with GPT-4o-mini (cost optimization)
+    - Polishes with GPT-4o (quality enhancement)
+    - Optimizes for target keyword
+    - Includes meta description, FAQs, internal links
+
+    Long-running task (8-12 minutes). Returns job_id immediately.
     """
     try:
         job = await agent_service.create_job(
@@ -96,35 +98,123 @@ async def write_content(
             }
         )
 
-        background_tasks.add_task(execute_job_background, job.id)
+        async def execute_write():
+            from config.database import AsyncSessionLocal
+            async with AsyncSessionLocal() as session:
+                await agent_service.execute_job(session, job)
 
-        return AgentResponseBase(
+        background_tasks.add_task(execute_write)
+
+        return WriteResponse(
             success=True,
-            message="Content writing job created",
+            message=f"Content writing job queued. Estimated time: 8-12 minutes",
             job_id=str(job.id),
-            status="pending"
+            status="queued",
+            created_at=job.created_at
         )
 
     except Exception as e:
-        logger.error(f"Failed to create writing job: {e}")
+        logger.error(f"Failed to queue write job: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            detail=f"Failed to queue write job: {str(e)}"
         )
 
 
-@router.get("/jobs/{job_id}", response_model=JobResponse)
-async def get_job_status(
-    job_id: int,
-    db: Annotated[AsyncSession, Depends(get_db)]
+@router.post("/optimize", response_model=OptimizeResponse, status_code=status.HTTP_202_ACCEPTED)
+async def optimize_content(
+    request: OptimizeRequest,
+    background_tasks: BackgroundTasks,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[dict, Depends(get_current_user)] = None
 ):
-    """Get job status and results"""
-    job = await agent_service.get_job(db, job_id)
+    """
+    Analyze and optimize existing content
 
-    if not job:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Job {job_id} not found"
+    This endpoint:
+    - Fetches content from URL
+    - Analyzes SEO factors
+    - Provides optimization recommendations
+    - Suggests improvements for rankings
+    """
+    try:
+        job = await agent_service.create_job(
+            db=db,
+            agent_type=AgentType.SEO_WRITER,
+            input_data={
+                "command": "optimize",
+                "url": str(request.url),
+                "target_keyword": request.target_keyword
+            }
         )
 
-    return JobResponse.model_validate(job)
+        async def execute_optimize():
+            from config.database import AsyncSessionLocal
+            async with AsyncSessionLocal() as session:
+                await agent_service.execute_job(session, job)
+
+        background_tasks.add_task(execute_optimize)
+
+        return OptimizeResponse(
+            success=True,
+            message=f"Content optimization job queued for: {request.url}",
+            job_id=str(job.id),
+            status="queued",
+            created_at=job.created_at
+        )
+
+    except Exception as e:
+        logger.error(f"Failed to queue optimize job: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to queue optimize job: {str(e)}"
+        )
+
+
+@router.post("/review", response_model=ReviewResponse, status_code=status.HTTP_202_ACCEPTED)
+async def review_performance(
+    request: ReviewRequest,
+    background_tasks: BackgroundTasks,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[dict, Depends(get_current_user)] = None
+):
+    """
+    Review content performance
+
+    Analyzes:
+    - Google Analytics data
+    - Google Search Console metrics
+    - Content engagement
+    - Ranking changes
+    """
+    try:
+        job = await agent_service.create_job(
+            db=db,
+            agent_type=AgentType.SEO_WRITER,
+            input_data={
+                "command": "review",
+                **request.model_dump()
+            }
+        )
+
+        async def execute_review():
+            from config.database import AsyncSessionLocal
+            async with AsyncSessionLocal() as session:
+                await agent_service.execute_job(session, job)
+
+        background_tasks.add_task(execute_review)
+
+        return ReviewResponse(
+            success=True,
+            message=f"Performance review job queued for {request.period_days} days",
+            job_id=str(job.id),
+            status="queued",
+            created_at=job.created_at
+        )
+
+    except Exception as e:
+        logger.error(f"Failed to queue review job: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to queue review job: {str(e)}"
+        )

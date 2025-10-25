@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from config.settings import settings
 from config.database import init_db, close_db
 from config.logging import logger
-from api.routes import health, seo_routes, email_routes
+from api.routes import health, seo_routes, email_routes, cmo_routes
 
 
 @asynccontextmanager
@@ -54,6 +54,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(seo_routes.router)
 app.include_router(email_routes.router)
+app.include_router(cmo_routes.router)
 
 
 @app.get("/")

@@ -13,9 +13,12 @@ class BaseAgent(ABC):
     """Base class for all OpenAI Agents"""
 
     def __init__(self, model: str = None, vector_store_id: str = None):
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY environment variable not set")
+        api_key = os.getenv("OPENAI_API_KEY", "sk-placeholder-key-replace-with-real-key")
+
+        # Allow placeholder API key for development/testing
+        if not api_key or api_key == "sk-placeholder-key-replace-with-real-key":
+            logger.warning(f"{self.__class__.__name__}: Using placeholder API key. Set OPENAI_API_KEY for production.")
+            api_key = "sk-placeholder-key-replace-with-real-key"
 
         self.client = OpenAI(api_key=api_key)
         self.model = model or os.getenv("DEFAULT_MODEL", "gpt-4o-mini")

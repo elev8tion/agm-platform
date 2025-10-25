@@ -1,49 +1,39 @@
 """
-Email Marketer API Routes
+Email Marketing Agent API Routes
 """
 from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
+from api.schemas.agent_requests import CreateEmailRequest, CreateSeriesRequest
+from api.schemas.agent_responses import EmailResponse, SeriesResponse
 from config.database import get_db
-from schemas.agent_schemas import (
-    CreateEmailRequest,
-    CreateSeriesRequest,
-    AgentResponseBase,
-    JobResponse
-)
-from models.agent_job import AgentType
+from api.dependencies import get_current_user
 from services.agent_service import agent_service
+from models.agent_job import AgentType
 from loguru import logger
 
 
-router = APIRouter(prefix="/api/agents/email", tags=["Email Marketer"])
+router = APIRouter(prefix="/api/agents/email", tags=["Email Marketing Agent"])
 
 
-async def execute_job_background(job_id: int):
-    """Background task to execute job"""
-    from config.database import AsyncSessionLocal
-
-    async with AsyncSessionLocal() as db:
-        job = await agent_service.get_job(db, job_id)
-        if job:
-            try:
-                await agent_service.execute_job(db, job)
-            except Exception as e:
-                logger.error(f"Background job {job_id} failed: {e}")
-
-
-@router.post("/create", response_model=AgentResponseBase)
+@router.post("/create", response_model=EmailResponse, status_code=status.HTTP_202_ACCEPTED)
 async def create_email(
     request: CreateEmailRequest,
     background_tasks: BackgroundTasks,
-    db: Annotated[AsyncSession, Depends(get_db)]
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[dict, Depends(get_current_user)] = None
 ):
     """
-    Create a marketing email
+    Create a single marketing email
 
-    Creates a background job to generate email copy using AI.
-    Returns immediately with job ID to track progress.
+    Generates:
+    - Compelling subject line
+    - Engaging email body
+    - Clear call-to-action
+    - Preview text
+
+    Uses brand voice from Vector Store context.
     """
     try:
         job = await agent_service.create_job(
@@ -55,34 +45,46 @@ async def create_email(
             }
         )
 
-        background_tasks.add_task(execute_job_background, job.id)
+        async def execute_email():
+            from config.database import AsyncSessionLocal
+            async with AsyncSessionLocal() as session:
+                await agent_service.execute_job(session, job)
 
-        return AgentResponseBase(
+        background_tasks.add_task(execute_email)
+
+        return EmailResponse(
             success=True,
-            message="Email creation job created",
+            message="Email creation job queued",
             job_id=str(job.id),
-            status="pending"
+            status="queued",
+            created_at=job.created_at
         )
 
     except Exception as e:
-        logger.error(f"Failed to create email job: {e}")
+        logger.error(f"Failed to queue email creation job: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            detail=f"Failed to queue email creation job: {str(e)}"
         )
 
 
-@router.post("/series", response_model=AgentResponseBase)
-async def create_email_series(
+@router.post("/series", response_model=SeriesResponse, status_code=status.HTTP_202_ACCEPTED)
+async def create_series(
     request: CreateSeriesRequest,
     background_tasks: BackgroundTasks,
-    db: Annotated[AsyncSession, Depends(get_db)]
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[dict, Depends(get_current_user)] = None
 ):
     """
-    Create an email series/sequence
+    Create email series/sequence
 
-    Creates a background job to generate multi-email campaign.
-    Returns immediately with job ID to track progress.
+    Generates multi-email sequence with:
+    - Cohesive narrative arc
+    - Progressive value delivery
+    - Consistent branding
+    - Strategic CTAs
+
+    Perfect for onboarding, nurture campaigns, product launches.
     """
     try:
         job = await agent_service.create_job(
@@ -94,35 +96,24 @@ async def create_email_series(
             }
         )
 
-        background_tasks.add_task(execute_job_background, job.id)
+        async def execute_series():
+            from config.database import AsyncSessionLocal
+            async with AsyncSessionLocal() as session:
+                await agent_service.execute_job(session, job)
 
-        return AgentResponseBase(
+        background_tasks.add_task(execute_series)
+
+        return SeriesResponse(
             success=True,
-            message="Email series job created",
+            message=f"Email series job queued ({request.num_emails} emails)",
             job_id=str(job.id),
-            status="pending"
+            status="queued",
+            created_at=job.created_at
         )
 
     except Exception as e:
-        logger.error(f"Failed to create email series job: {e}")
+        logger.error(f"Failed to queue series creation job: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            detail=f"Failed to queue series creation job: {str(e)}"
         )
-
-
-@router.get("/jobs/{job_id}", response_model=JobResponse)
-async def get_job_status(
-    job_id: int,
-    db: Annotated[AsyncSession, Depends(get_db)]
-):
-    """Get job status and results"""
-    job = await agent_service.get_job(db, job_id)
-
-    if not job:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Job {job_id} not found"
-        )
-
-    return JobResponse.model_validate(job)
