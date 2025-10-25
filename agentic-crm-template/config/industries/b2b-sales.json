@@ -1,0 +1,143 @@
+{
+  "industry": {
+    "name": "b2b-sales",
+    "displayName": "B2B Sales",
+    "description": "Enterprise and commercial sales CRM for B2B organizations",
+    "icon": "trending-up"
+  },
+  "entities": {
+    "primary": {
+      "singular": "Product",
+      "plural": "Products",
+      "icon": "package",
+      "description": "Products and services offered",
+      "fields": [
+        { "name": "name", "label": "Product Name", "type": "text", "required": true },
+        { "name": "sku", "label": "SKU", "type": "text", "required": false },
+        { "name": "category", "label": "Category", "type": "select", "required": true,
+          "options": ["Software", "Hardware", "Service", "Consulting", "Training", "Support"] },
+        { "name": "price", "label": "Base Price", "type": "currency", "required": true },
+        { "name": "pricingModel", "label": "Pricing Model", "type": "select", "required": true,
+          "options": ["One-Time", "Monthly", "Annual", "Usage-Based", "Custom"] },
+        { "name": "description", "label": "Description", "type": "textarea", "required": true },
+        { "name": "features", "label": "Features", "type": "textarea", "required": false },
+        { "name": "minimumOrder", "label": "Minimum Order Quantity", "type": "number", "required": false },
+        { "name": "setupFee", "label": "Setup Fee", "type": "currency", "required": false },
+        { "name": "contractLength", "label": "Contract Length (months)", "type": "number", "required": false },
+        { "name": "status", "label": "Status", "type": "select", "required": true,
+          "options": ["Active", "Deprecated", "Coming Soon", "Discontinued"] }
+      ]
+    },
+    "lead": {
+      "singular": "Prospect",
+      "plural": "Prospects",
+      "icon": "user-plus",
+      "description": "Potential business customers",
+      "stages": [
+        { "name": "new", "label": "New Lead", "color": "#3b82f6", "order": 1 },
+        { "name": "contacted", "label": "Initial Contact", "color": "#8b5cf6", "order": 2 },
+        { "name": "discovery", "label": "Discovery", "color": "#10b981", "order": 3 },
+        { "name": "qualified", "label": "Qualified", "color": "#f59e0b", "order": 4 },
+        { "name": "demo", "label": "Demo Scheduled", "color": "#ef4444", "order": 5 },
+        { "name": "proposal", "label": "Proposal Sent", "color": "#06b6d4", "order": 6 },
+        { "name": "negotiation", "label": "Negotiation", "color": "#f97316", "order": 7 },
+        { "name": "converted", "label": "Closed Won", "color": "#22c55e", "order": 8 },
+        { "name": "lost", "label": "Closed Lost", "color": "#64748b", "order": 9 }
+      ],
+      "fields": [
+        { "name": "companyName", "label": "Company Name", "type": "text", "required": true },
+        { "name": "contactName", "label": "Contact Name", "type": "text", "required": true },
+        { "name": "title", "label": "Job Title", "type": "text", "required": false },
+        { "name": "email", "label": "Email", "type": "email", "required": true },
+        { "name": "phone", "label": "Phone", "type": "phone", "required": false },
+        { "name": "companySize", "label": "Company Size", "type": "select", "required": false,
+          "options": ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"] },
+        { "name": "industry", "label": "Industry", "type": "text", "required": false },
+        { "name": "annualRevenue", "label": "Annual Revenue", "type": "currency", "required": false },
+        { "name": "budget", "label": "Budget", "type": "currency", "required": false },
+        { "name": "timeline", "label": "Purchase Timeline", "type": "select", "required": false,
+          "options": ["Immediate", "This Quarter", "Next Quarter", "This Year", "Exploring"] },
+        { "name": "painPoints", "label": "Pain Points", "type": "textarea", "required": false },
+        { "name": "competitors", "label": "Competitors", "type": "text", "required": false },
+        { "name": "decisionMakers", "label": "Number of Decision Makers", "type": "number", "required": false },
+        { "name": "source", "label": "Lead Source", "type": "select", "required": false,
+          "options": ["Website", "Cold Outreach", "Referral", "Event", "LinkedIn", "Partner", "Inbound", "Other"] }
+      ]
+    },
+    "transaction": {
+      "singular": "Deal",
+      "plural": "Deals",
+      "icon": "dollar-sign",
+      "description": "Active sales opportunities",
+      "stages": [
+        { "name": "proposal", "label": "Proposal", "color": "#3b82f6", "order": 1 },
+        { "name": "negotiation", "label": "Negotiation", "color": "#8b5cf6", "order": 2 },
+        { "name": "legal-review", "label": "Legal Review", "color": "#f59e0b", "order": 3 },
+        { "name": "contract-sent", "label": "Contract Sent", "color": "#10b981", "order": 4 },
+        { "name": "signed", "label": "Signed", "color": "#22c55e", "order": 5 },
+        { "name": "onboarding", "label": "Onboarding", "color": "#06b6d4", "order": 6 },
+        { "name": "live", "label": "Live", "color": "#22c55e", "order": 7 },
+        { "name": "lost", "label": "Lost", "color": "#64748b", "order": 8 }
+      ],
+      "fields": [
+        { "name": "prospectId", "label": "Prospect", "type": "reference", "reference": "lead", "required": true },
+        { "name": "productIds", "label": "Products", "type": "multiselect", "reference": "primary", "required": true },
+        { "name": "dealValue", "label": "Deal Value", "type": "currency", "required": true },
+        { "name": "arr", "label": "Annual Recurring Revenue", "type": "currency", "required": false },
+        { "name": "probability", "label": "Win Probability (%)", "type": "number", "required": false },
+        { "name": "expectedCloseDate", "label": "Expected Close Date", "type": "date", "required": true },
+        { "name": "actualCloseDate", "label": "Actual Close Date", "type": "date", "required": false },
+        { "name": "contractLength", "label": "Contract Length (months)", "type": "number", "required": false },
+        { "name": "discountPercent", "label": "Discount (%)", "type": "number", "required": false },
+        { "name": "commissionPercent", "label": "Commission (%)", "type": "number", "required": false },
+        { "name": "lostReason", "label": "Lost Reason", "type": "select", "required": false,
+          "options": ["Price", "Competitor", "No Budget", "Timing", "No Decision", "Other"] },
+        { "name": "notes", "label": "Notes", "type": "textarea", "required": false }
+      ]
+    },
+    "contact": {
+      "singular": "Contact",
+      "plural": "Contacts",
+      "icon": "user",
+      "description": "All business contacts and stakeholders"
+    },
+    "agent": {
+      "singular": "Sales Rep",
+      "plural": "Sales Reps",
+      "icon": "user-check",
+      "description": "Sales representatives and account executives"
+    }
+  },
+  "terminology": {
+    "agent": "Sales Rep",
+    "client": "Customer",
+    "deal": "Deal",
+    "pipeline": "Sales Pipeline",
+    "commission": "Commission",
+    "appointment": "Meeting"
+  },
+  "features": {
+    "appointments": {
+      "enabled": true,
+      "types": ["Discovery Call", "Demo", "Follow-Up", "Contract Review", "Kickoff"]
+    },
+    "documents": {
+      "enabled": true,
+      "types": ["Proposal", "Contract", "MSA", "SOW", "NDA", "Order Form"]
+    },
+    "communications": {
+      "enabled": true,
+      "channels": ["email", "phone", "slack", "video"]
+    },
+    "analytics": {
+      "enabled": true,
+      "metrics": ["Revenue", "ARR", "Deal Velocity", "Win Rate", "Average Deal Size", "Sales Cycle Length"]
+    }
+  },
+  "integrations": {
+    "salesforce": { "enabled": false, "description": "Salesforce sync" },
+    "hubspot": { "enabled": false, "description": "HubSpot integration" },
+    "docusign": { "enabled": false, "description": "Contract signing" },
+    "slack": { "enabled": true, "description": "Team communication" }
+  }
+}

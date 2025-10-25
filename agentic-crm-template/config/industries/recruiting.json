@@ -1,0 +1,146 @@
+{
+  "industry": {
+    "name": "recruiting",
+    "displayName": "Recruiting & Staffing",
+    "description": "Recruitment and talent acquisition CRM for staffing agencies",
+    "icon": "briefcase"
+  },
+  "entities": {
+    "primary": {
+      "singular": "Job Opening",
+      "plural": "Job Openings",
+      "icon": "briefcase",
+      "description": "Open positions and job requisitions",
+      "fields": [
+        { "name": "title", "label": "Job Title", "type": "text", "required": true },
+        { "name": "company", "label": "Company", "type": "text", "required": true },
+        { "name": "location", "label": "Location", "type": "text", "required": true },
+        { "name": "employmentType", "label": "Employment Type", "type": "select", "required": true,
+          "options": ["Full-Time", "Part-Time", "Contract", "Contract-to-Hire", "Temporary"] },
+        { "name": "salary", "label": "Salary Range", "type": "text", "required": false },
+        { "name": "jobType", "label": "Job Type", "type": "select", "required": true,
+          "options": ["Remote", "Hybrid", "On-Site"] },
+        { "name": "experienceLevel", "label": "Experience Level", "type": "select", "required": true,
+          "options": ["Entry Level", "Mid Level", "Senior", "Lead", "Executive"] },
+        { "name": "department", "label": "Department", "type": "text", "required": false },
+        { "name": "numberOfOpenings", "label": "Number of Openings", "type": "number", "required": false },
+        { "name": "status", "label": "Status", "type": "select", "required": true,
+          "options": ["Open", "On Hold", "Filled", "Cancelled"] },
+        { "name": "description", "label": "Job Description", "type": "textarea", "required": true },
+        { "name": "requirements", "label": "Requirements", "type": "textarea", "required": false },
+        { "name": "benefits", "label": "Benefits", "type": "textarea", "required": false },
+        { "name": "postedDate", "label": "Posted Date", "type": "date", "required": false },
+        { "name": "deadline", "label": "Application Deadline", "type": "date", "required": false }
+      ]
+    },
+    "lead": {
+      "singular": "Candidate",
+      "plural": "Candidates",
+      "icon": "user-plus",
+      "description": "Job candidates and applicants",
+      "stages": [
+        { "name": "new", "label": "New Applicant", "color": "#3b82f6", "order": 1 },
+        { "name": "screening", "label": "Screening", "color": "#8b5cf6", "order": 2 },
+        { "name": "phone-screen", "label": "Phone Screen", "color": "#10b981", "order": 3 },
+        { "name": "interview", "label": "Interview", "color": "#f59e0b", "order": 4 },
+        { "name": "client-submission", "label": "Submitted to Client", "color": "#ef4444", "order": 5 },
+        { "name": "offer", "label": "Offer Extended", "color": "#22c55e", "order": 6 },
+        { "name": "placed", "label": "Placed", "color": "#10b981", "order": 7 },
+        { "name": "rejected", "label": "Rejected", "color": "#64748b", "order": 8 }
+      ],
+      "fields": [
+        { "name": "name", "label": "Full Name", "type": "text", "required": true },
+        { "name": "email", "label": "Email", "type": "email", "required": true },
+        { "name": "phone", "label": "Phone", "type": "phone", "required": true },
+        { "name": "currentTitle", "label": "Current Title", "type": "text", "required": false },
+        { "name": "currentCompany", "label": "Current Company", "type": "text", "required": false },
+        { "name": "currentSalary", "label": "Current Salary", "type": "currency", "required": false },
+        { "name": "desiredSalary", "label": "Desired Salary", "type": "currency", "required": false },
+        { "name": "yearsExperience", "label": "Years of Experience", "type": "number", "required": false },
+        { "name": "skills", "label": "Skills", "type": "textarea", "required": false },
+        { "name": "education", "label": "Education", "type": "text", "required": false },
+        { "name": "resumeUrl", "label": "Resume URL", "type": "url", "required": false },
+        { "name": "linkedInUrl", "label": "LinkedIn URL", "type": "url", "required": false },
+        { "name": "availability", "label": "Availability", "type": "select", "required": false,
+          "options": ["Immediate", "2 Weeks", "1 Month", "2+ Months", "Passive"] },
+        { "name": "source", "label": "Source", "type": "select", "required": false,
+          "options": ["Job Board", "LinkedIn", "Referral", "Direct Apply", "Sourced", "Agency", "Other"] }
+      ]
+    },
+    "transaction": {
+      "singular": "Placement",
+      "plural": "Placements",
+      "icon": "check-circle",
+      "description": "Successful candidate placements",
+      "stages": [
+        { "name": "offer-pending", "label": "Offer Pending", "color": "#f59e0b", "order": 1 },
+        { "name": "offer-accepted", "label": "Offer Accepted", "color": "#10b981", "order": 2 },
+        { "name": "background-check", "label": "Background Check", "color": "#8b5cf6", "order": 3 },
+        { "name": "onboarding", "label": "Onboarding", "color": "#3b82f6", "order": 4 },
+        { "name": "started", "label": "Started", "color": "#22c55e", "order": 5 },
+        { "name": "guarantee-period", "label": "Guarantee Period", "color": "#10b981", "order": 6 },
+        { "name": "completed", "label": "Completed", "color": "#22c55e", "order": 7 },
+        { "name": "fell-through", "label": "Fell Through", "color": "#ef4444", "order": 8 }
+      ],
+      "fields": [
+        { "name": "jobId", "label": "Job Opening", "type": "reference", "reference": "primary", "required": true },
+        { "name": "candidateId", "label": "Candidate", "type": "reference", "reference": "lead", "required": true },
+        { "name": "offerDate", "label": "Offer Date", "type": "date", "required": true },
+        { "name": "startDate", "label": "Start Date", "type": "date", "required": false },
+        { "name": "salary", "label": "Placement Salary", "type": "currency", "required": true },
+        { "name": "feeType", "label": "Fee Type", "type": "select", "required": true,
+          "options": ["Percentage", "Flat Fee", "Retainer"] },
+        { "name": "feePercentage", "label": "Fee Percentage", "type": "number", "required": false },
+        { "name": "feeAmount", "label": "Fee Amount", "type": "currency", "required": true },
+        { "name": "guaranteePeriod", "label": "Guarantee Period (days)", "type": "number", "required": false },
+        { "name": "invoiceNumber", "label": "Invoice Number", "type": "text", "required": false },
+        { "name": "paymentStatus", "label": "Payment Status", "type": "select", "required": false,
+          "options": ["Pending", "Invoiced", "Paid", "Overdue"] }
+      ]
+    },
+    "contact": {
+      "singular": "Contact",
+      "plural": "Contacts",
+      "icon": "user",
+      "description": "Clients, hiring managers, and candidates"
+    },
+    "agent": {
+      "singular": "Recruiter",
+      "plural": "Recruiters",
+      "icon": "user-check",
+      "description": "Recruiters and account managers"
+    }
+  },
+  "terminology": {
+    "agent": "Recruiter",
+    "client": "Candidate",
+    "deal": "Placement",
+    "pipeline": "Candidate Pipeline",
+    "commission": "Placement Fee",
+    "appointment": "Interview"
+  },
+  "features": {
+    "appointments": {
+      "enabled": true,
+      "types": ["Phone Screen", "Interview", "Client Meeting", "Offer Discussion"]
+    },
+    "documents": {
+      "enabled": true,
+      "types": ["Resume", "Offer Letter", "Contract", "Background Check", "W-4/W-9"]
+    },
+    "communications": {
+      "enabled": true,
+      "channels": ["email", "sms", "phone", "slack"]
+    },
+    "analytics": {
+      "enabled": true,
+      "metrics": ["Total Placements", "Revenue", "Average Time to Fill", "Candidate Conversion Rate", "Client Satisfaction"]
+    }
+  },
+  "integrations": {
+    "ats": { "enabled": false, "description": "Applicant Tracking System integration" },
+    "jobBoards": { "enabled": false, "description": "Indeed, LinkedIn, Monster integration" },
+    "backgroundCheck": { "enabled": false, "description": "Background check services" },
+    "slack": { "enabled": true, "description": "Team communication" }
+  }
+}

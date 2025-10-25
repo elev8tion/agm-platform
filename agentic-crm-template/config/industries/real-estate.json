@@ -1,0 +1,147 @@
+{
+  "industry": {
+    "name": "real-estate",
+    "displayName": "Real Estate",
+    "description": "Property sales and leasing CRM for real estate agents and brokerages",
+    "icon": "building"
+  },
+  "entities": {
+    "primary": {
+      "singular": "Property",
+      "plural": "Properties",
+      "icon": "building",
+      "description": "Real estate listings and properties",
+      "fields": [
+        { "name": "title", "label": "Property Title", "type": "text", "required": true },
+        { "name": "address", "label": "Address", "type": "text", "required": true },
+        { "name": "city", "label": "City", "type": "text", "required": true },
+        { "name": "state", "label": "State", "type": "text", "required": true },
+        { "name": "zipCode", "label": "ZIP Code", "type": "text", "required": true },
+        { "name": "price", "label": "Price", "type": "currency", "required": true },
+        { "name": "propertyType", "label": "Property Type", "type": "select", "required": true,
+          "options": ["Single Family", "Condo", "Townhouse", "Multi-Family", "Land", "Commercial"] },
+        { "name": "bedrooms", "label": "Bedrooms", "type": "number", "required": false },
+        { "name": "bathrooms", "label": "Bathrooms", "type": "number", "required": false },
+        { "name": "squareFeet", "label": "Square Feet", "type": "number", "required": false },
+        { "name": "lotSize", "label": "Lot Size", "type": "text", "required": false },
+        { "name": "yearBuilt", "label": "Year Built", "type": "number", "required": false },
+        { "name": "status", "label": "Status", "type": "select", "required": true,
+          "options": ["Active", "Pending", "Sold", "Off Market", "Coming Soon"] },
+        { "name": "description", "label": "Description", "type": "textarea", "required": false },
+        { "name": "features", "label": "Features", "type": "textarea", "required": false },
+        { "name": "mlsNumber", "label": "MLS Number", "type": "text", "required": false }
+      ]
+    },
+    "lead": {
+      "singular": "Lead",
+      "plural": "Leads",
+      "icon": "user-plus",
+      "description": "Potential buyers and sellers",
+      "stages": [
+        { "name": "new", "label": "New Lead", "color": "#3b82f6", "order": 1 },
+        { "name": "contacted", "label": "Contacted", "color": "#8b5cf6", "order": 2 },
+        { "name": "qualified", "label": "Qualified", "color": "#10b981", "order": 3 },
+        { "name": "showing-scheduled", "label": "Showing Scheduled", "color": "#f59e0b", "order": 4 },
+        { "name": "offer-made", "label": "Offer Made", "color": "#ef4444", "order": 5 },
+        { "name": "converted", "label": "Converted", "color": "#22c55e", "order": 6 },
+        { "name": "lost", "label": "Lost", "color": "#64748b", "order": 7 }
+      ],
+      "fields": [
+        { "name": "name", "label": "Name", "type": "text", "required": true },
+        { "name": "email", "label": "Email", "type": "email", "required": true },
+        { "name": "phone", "label": "Phone", "type": "phone", "required": false },
+        { "name": "leadType", "label": "Lead Type", "type": "select", "required": true,
+          "options": ["Buyer", "Seller", "Both"] },
+        { "name": "budget", "label": "Budget", "type": "currency", "required": false },
+        { "name": "preApproved", "label": "Pre-Approved", "type": "boolean", "required": false },
+        { "name": "timeline", "label": "Timeline", "type": "select", "required": false,
+          "options": ["Immediate", "1-3 months", "3-6 months", "6+ months", "Just Looking"] },
+        { "name": "preferredAreas", "label": "Preferred Areas", "type": "text", "required": false },
+        { "name": "source", "label": "Lead Source", "type": "select", "required": false,
+          "options": ["Website", "Referral", "Zillow", "Realtor.com", "Social Media", "Walk-in", "Other"] }
+      ]
+    },
+    "transaction": {
+      "singular": "Transaction",
+      "plural": "Transactions",
+      "icon": "file-text",
+      "description": "Active property transactions and deals",
+      "stages": [
+        { "name": "pending", "label": "Pending", "color": "#f59e0b", "order": 1 },
+        { "name": "under-contract", "label": "Under Contract", "color": "#3b82f6", "order": 2 },
+        { "name": "inspection", "label": "Inspection", "color": "#8b5cf6", "order": 3 },
+        { "name": "appraisal", "label": "Appraisal", "color": "#10b981", "order": 4 },
+        { "name": "financing", "label": "Financing", "color": "#f59e0b", "order": 5 },
+        { "name": "closing", "label": "Closing", "color": "#ef4444", "order": 6 },
+        { "name": "closed", "label": "Closed", "color": "#22c55e", "order": 7 },
+        { "name": "cancelled", "label": "Cancelled", "color": "#64748b", "order": 8 }
+      ],
+      "fields": [
+        { "name": "propertyId", "label": "Property", "type": "reference", "reference": "primary", "required": true },
+        { "name": "clientId", "label": "Client", "type": "reference", "reference": "lead", "required": true },
+        { "name": "transactionType", "label": "Transaction Type", "type": "select", "required": true,
+          "options": ["Purchase", "Sale", "Lease"] },
+        { "name": "offerPrice", "label": "Offer Price", "type": "currency", "required": true },
+        { "name": "offerDate", "label": "Offer Date", "type": "date", "required": true },
+        { "name": "closingDate", "label": "Closing Date", "type": "date", "required": false },
+        { "name": "commissionRate", "label": "Commission Rate (%)", "type": "number", "required": false },
+        { "name": "commissionAmount", "label": "Commission Amount", "type": "currency", "required": false },
+        { "name": "escrowCompany", "label": "Escrow Company", "type": "text", "required": false },
+        { "name": "lender", "label": "Lender", "type": "text", "required": false },
+        { "name": "contingencies", "label": "Contingencies", "type": "textarea", "required": false }
+      ]
+    },
+    "contact": {
+      "singular": "Contact",
+      "plural": "Contacts",
+      "icon": "user",
+      "description": "All contacts including clients and vendors",
+      "fields": [
+        { "name": "name", "label": "Name", "type": "text", "required": true },
+        { "name": "email", "label": "Email", "type": "email", "required": false },
+        { "name": "phone", "label": "Phone", "type": "phone", "required": false },
+        { "name": "company", "label": "Company", "type": "text", "required": false },
+        { "name": "role", "label": "Role", "type": "select", "required": false,
+          "options": ["Client", "Lender", "Inspector", "Appraiser", "Attorney", "Contractor", "Other"] }
+      ]
+    },
+    "agent": {
+      "singular": "Agent",
+      "plural": "Agents",
+      "icon": "user-check",
+      "description": "Real estate agents and team members"
+    }
+  },
+  "terminology": {
+    "agent": "Agent",
+    "client": "Client",
+    "deal": "Transaction",
+    "pipeline": "Pipeline",
+    "commission": "Commission",
+    "appointment": "Showing"
+  },
+  "features": {
+    "appointments": {
+      "enabled": true,
+      "types": ["Property Showing", "Client Meeting", "Open House", "Closing"]
+    },
+    "documents": {
+      "enabled": true,
+      "types": ["Purchase Agreement", "Listing Agreement", "Disclosure", "Inspection Report", "Appraisal"]
+    },
+    "communications": {
+      "enabled": true,
+      "channels": ["email", "sms", "phone", "slack"]
+    },
+    "analytics": {
+      "enabled": true,
+      "metrics": ["Total Sales", "Commission Earned", "Properties Sold", "Average Days on Market", "Conversion Rate"]
+    }
+  },
+  "integrations": {
+    "mls": { "enabled": false, "description": "MLS data integration" },
+    "zillow": { "enabled": false, "description": "Zillow lead integration" },
+    "docusign": { "enabled": false, "description": "Digital document signing" },
+    "slack": { "enabled": true, "description": "Team communication" }
+  }
+}

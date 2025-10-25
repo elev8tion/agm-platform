@@ -1,0 +1,145 @@
+{
+  "industry": {
+    "name": "mortgage",
+    "displayName": "Mortgage Brokerage",
+    "description": "Mortgage lending and brokerage CRM for loan officers",
+    "icon": "home"
+  },
+  "entities": {
+    "primary": {
+      "singular": "Loan Product",
+      "plural": "Loan Products",
+      "icon": "credit-card",
+      "description": "Available mortgage loan products",
+      "fields": [
+        { "name": "productName", "label": "Product Name", "type": "text", "required": true },
+        { "name": "loanType", "label": "Loan Type", "type": "select", "required": true,
+          "options": ["Conventional", "FHA", "VA", "USDA", "Jumbo", "Home Equity", "Refinance"] },
+        { "name": "lender", "label": "Lender", "type": "text", "required": true },
+        { "name": "interestRate", "label": "Interest Rate (%)", "type": "number", "required": true },
+        { "name": "aprRate", "label": "APR (%)", "type": "number", "required": true },
+        { "name": "term", "label": "Term (years)", "type": "select", "required": true,
+          "options": ["15", "20", "30"] },
+        { "name": "loanLimit", "label": "Maximum Loan Amount", "type": "currency", "required": false },
+        { "name": "minDownPayment", "label": "Minimum Down Payment (%)", "type": "number", "required": false },
+        { "name": "minCreditScore", "label": "Minimum Credit Score", "type": "number", "required": false },
+        { "name": "closingCosts", "label": "Estimated Closing Costs", "type": "currency", "required": false },
+        { "name": "features", "label": "Features", "type": "textarea", "required": false },
+        { "name": "status", "label": "Status", "type": "select", "required": true,
+          "options": ["Active", "Inactive", "Suspended"] }
+      ]
+    },
+    "lead": {
+      "singular": "Borrower",
+      "plural": "Borrowers",
+      "icon": "user-plus",
+      "description": "Potential mortgage borrowers",
+      "stages": [
+        { "name": "new", "label": "New Inquiry", "color": "#3b82f6", "order": 1 },
+        { "name": "pre-qualification", "label": "Pre-Qualification", "color": "#8b5cf6", "order": 2 },
+        { "name": "application", "label": "Application", "color": "#10b981", "order": 3 },
+        { "name": "documentation", "label": "Documentation", "color": "#f59e0b", "order": 4 },
+        { "name": "processing", "label": "Processing", "color": "#ef4444", "order": 5 },
+        { "name": "approved", "label": "Pre-Approved", "color": "#22c55e", "order": 6 },
+        { "name": "lost", "label": "Lost", "color": "#64748b", "order": 7 }
+      ],
+      "fields": [
+        { "name": "name", "label": "Full Name", "type": "text", "required": true },
+        { "name": "email", "label": "Email", "type": "email", "required": true },
+        { "name": "phone", "label": "Phone", "type": "phone", "required": true },
+        { "name": "coBorrowerName", "label": "Co-Borrower Name", "type": "text", "required": false },
+        { "name": "propertyAddress", "label": "Property Address", "type": "text", "required": false },
+        { "name": "propertyValue", "label": "Property Value", "type": "currency", "required": false },
+        { "name": "loanAmount", "label": "Desired Loan Amount", "type": "currency", "required": false },
+        { "name": "downPayment", "label": "Down Payment", "type": "currency", "required": false },
+        { "name": "creditScore", "label": "Credit Score", "type": "number", "required": false },
+        { "name": "annualIncome", "label": "Annual Income", "type": "currency", "required": false },
+        { "name": "employmentStatus", "label": "Employment Status", "type": "select", "required": false,
+          "options": ["Full-Time", "Part-Time", "Self-Employed", "Retired", "Other"] },
+        { "name": "loanPurpose", "label": "Loan Purpose", "type": "select", "required": false,
+          "options": ["Purchase", "Refinance", "Cash-Out Refinance", "Home Equity"] },
+        { "name": "timeline", "label": "Timeline", "type": "select", "required": false,
+          "options": ["ASAP", "1-2 months", "3-6 months", "6+ months", "Just Exploring"] },
+        { "name": "source", "label": "Lead Source", "type": "select", "required": false,
+          "options": ["Website", "Referral", "Zillow", "Bankrate", "Realtor", "Walk-in", "Other"] }
+      ]
+    },
+    "transaction": {
+      "singular": "Loan Application",
+      "plural": "Loan Applications",
+      "icon": "file-text",
+      "description": "Active loan applications and closings",
+      "stages": [
+        { "name": "application", "label": "Application", "color": "#3b82f6", "order": 1 },
+        { "name": "processing", "label": "Processing", "color": "#8b5cf6", "order": 2 },
+        { "name": "underwriting", "label": "Underwriting", "color": "#f59e0b", "order": 3 },
+        { "name": "conditional-approval", "label": "Conditional Approval", "color": "#10b981", "order": 4 },
+        { "name": "clear-to-close", "label": "Clear to Close", "color": "#22c55e", "order": 5 },
+        { "name": "closing", "label": "Closing", "color": "#06b6d4", "order": 6 },
+        { "name": "funded", "label": "Funded", "color": "#22c55e", "order": 7 },
+        { "name": "denied", "label": "Denied", "color": "#ef4444", "order": 8 },
+        { "name": "withdrawn", "label": "Withdrawn", "color": "#64748b", "order": 9 }
+      ],
+      "fields": [
+        { "name": "borrowerId", "label": "Borrower", "type": "reference", "reference": "lead", "required": true },
+        { "name": "loanProductId", "label": "Loan Product", "type": "reference", "reference": "primary", "required": true },
+        { "name": "applicationDate", "label": "Application Date", "type": "date", "required": true },
+        { "name": "loanAmount", "label": "Loan Amount", "type": "currency", "required": true },
+        { "name": "propertyValue", "label": "Property Value", "type": "currency", "required": true },
+        { "name": "downPayment", "label": "Down Payment", "type": "currency", "required": true },
+        { "name": "interestRate", "label": "Interest Rate (%)", "type": "number", "required": true },
+        { "name": "monthlyPayment", "label": "Monthly Payment", "type": "currency", "required": false },
+        { "name": "closingDate", "label": "Expected Closing Date", "type": "date", "required": false },
+        { "name": "actualClosingDate", "label": "Actual Closing Date", "type": "date", "required": false },
+        { "name": "lockExpirationDate", "label": "Rate Lock Expiration", "type": "date", "required": false },
+        { "name": "appraisalValue", "label": "Appraisal Value", "type": "currency", "required": false },
+        { "name": "loanOfficerCommission", "label": "Commission", "type": "currency", "required": false },
+        { "name": "processorNotes", "label": "Processor Notes", "type": "textarea", "required": false }
+      ]
+    },
+    "contact": {
+      "singular": "Contact",
+      "plural": "Contacts",
+      "icon": "user",
+      "description": "Borrowers, realtors, title companies, and vendors"
+    },
+    "agent": {
+      "singular": "Loan Officer",
+      "plural": "Loan Officers",
+      "icon": "user-check",
+      "description": "Loan officers and processors"
+    }
+  },
+  "terminology": {
+    "agent": "Loan Officer",
+    "client": "Borrower",
+    "deal": "Loan",
+    "pipeline": "Loan Pipeline",
+    "commission": "Commission",
+    "appointment": "Consultation"
+  },
+  "features": {
+    "appointments": {
+      "enabled": true,
+      "types": ["Initial Consultation", "Document Review", "Closing", "Follow-Up"]
+    },
+    "documents": {
+      "enabled": true,
+      "types": ["Application", "Pre-Approval Letter", "Loan Estimate", "Closing Disclosure", "Appraisal", "Tax Returns", "Bank Statements"]
+    },
+    "communications": {
+      "enabled": true,
+      "channels": ["email", "sms", "phone", "slack"]
+    },
+    "analytics": {
+      "enabled": true,
+      "metrics": ["Total Loans Funded", "Volume", "Average Loan Size", "Time to Close", "Pull-Through Rate"]
+    }
+  },
+  "integrations": {
+    "encompass": { "enabled": false, "description": "Ellie Mae Encompass LOS" },
+    "creditCheck": { "enabled": false, "description": "Credit bureau integration" },
+    "docusign": { "enabled": false, "description": "Digital document signing" },
+    "slack": { "enabled": true, "description": "Team communication" }
+  }
+}

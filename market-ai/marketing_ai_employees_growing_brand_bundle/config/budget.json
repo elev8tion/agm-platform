@@ -1,0 +1,12 @@
+{
+  "limits": {
+    "web_search_calls": 200,
+    "file_search_calls": 1000,
+    "code_interpreter_sessions": 12,
+    "dollars_cap": 20
+  },
+  "models": {
+    "default": "gpt-4o-mini",
+    "polish": "gpt-4o"
+  }
+}

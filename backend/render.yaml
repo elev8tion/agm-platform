@@ -1,0 +1,61 @@
+# Render Blueprint for FastAPI Backend
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  # FastAPI Web Service
+  - type: web
+    name: agentic-marketing-api
+    env: python
+    region: oregon
+    plan: free  # Change to 'starter' ($7/month) for production
+    branch: main
+    rootDir: backend
+
+    # Build command
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+
+    # Start command
+    startCommand: |
+      alembic upgrade head
+      uvicorn main:app --host 0.0.0.0 --port $PORT
+
+    # Health check
+    healthCheckPath: /health
+
+    # Environment variables (set in Render dashboard)
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.14.0
+
+      - key: ENVIRONMENT
+        value: production
+
+      - key: DEBUG
+        value: false
+
+      - key: DATABASE_URL
+        sync: false  # Set manually in dashboard (Supabase or Render Postgres)
+
+      - key: OPENAI_API_KEY
+        sync: false  # Set manually in dashboard
+
+      - key: OPENAI_VECTOR_STORE_ID
+        sync: false  # Set manually in dashboard
+
+      - key: SECRET_KEY
+        generateValue: true
+
+      - key: CORS_ORIGINS
+        value: '["https://your-domain.netlify.app","https://*.netlify.app"]'
+
+      - key: LOG_LEVEL
+        value: INFO
+
+# Optional: PostgreSQL Database (if not using Supabase)
+# databases:
+#   - name: agentic-marketing-db
+#     databaseName: agentic_marketing
+#     plan: free
+#     region: oregon

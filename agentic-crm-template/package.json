@@ -1,0 +1,54 @@
+{
+  "name": "agentic-crm-template",
+  "version": "1.0.0",
+  "description": "Multi-industry CRM template system - Adapt for any industry in 1-2 days",
+  "type": "module",
+  "scripts": {
+    "setup:industry": "./scripts/setup-industry.sh",
+    "generate:theme": "node scripts/generate-theme.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,md}\""
+  },
+  "keywords": [
+    "crm",
+    "multi-industry",
+    "real-estate",
+    "insurance",
+    "recruiting",
+    "b2b-sales",
+    "mortgage",
+    "template",
+    "customizable"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.32",
+    "prettier": "^3.1.1",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.8",
+    "vitest": "^1.1.0"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.1"
+  }
+}

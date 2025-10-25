@@ -1,0 +1,131 @@
+{
+  "industry": {
+    "name": "insurance",
+    "displayName": "Insurance",
+    "description": "Insurance policy sales and management CRM for brokers and agents",
+    "icon": "shield"
+  },
+  "entities": {
+    "primary": {
+      "singular": "Policy",
+      "plural": "Policies",
+      "icon": "shield",
+      "description": "Insurance policies and products",
+      "fields": [
+        { "name": "policyNumber", "label": "Policy Number", "type": "text", "required": true },
+        { "name": "policyType", "label": "Policy Type", "type": "select", "required": true,
+          "options": ["Auto", "Home", "Life", "Health", "Business", "Umbrella", "Disability"] },
+        { "name": "carrier", "label": "Insurance Carrier", "type": "text", "required": true },
+        { "name": "premium", "label": "Annual Premium", "type": "currency", "required": true },
+        { "name": "coverageAmount", "label": "Coverage Amount", "type": "currency", "required": true },
+        { "name": "effectiveDate", "label": "Effective Date", "type": "date", "required": true },
+        { "name": "expirationDate", "label": "Expiration Date", "type": "date", "required": true },
+        { "name": "renewalDate", "label": "Renewal Date", "type": "date", "required": false },
+        { "name": "status", "label": "Status", "type": "select", "required": true,
+          "options": ["Active", "Pending", "Expired", "Cancelled", "Quote"] },
+        { "name": "deductible", "label": "Deductible", "type": "currency", "required": false },
+        { "name": "paymentFrequency", "label": "Payment Frequency", "type": "select", "required": false,
+          "options": ["Monthly", "Quarterly", "Semi-Annual", "Annual"] },
+        { "name": "notes", "label": "Notes", "type": "textarea", "required": false }
+      ]
+    },
+    "lead": {
+      "singular": "Lead",
+      "plural": "Leads",
+      "icon": "user-plus",
+      "description": "Potential insurance clients",
+      "stages": [
+        { "name": "new", "label": "New Lead", "color": "#3b82f6", "order": 1 },
+        { "name": "contacted", "label": "Contacted", "color": "#8b5cf6", "order": 2 },
+        { "name": "quote-sent", "label": "Quote Sent", "color": "#f59e0b", "order": 3 },
+        { "name": "follow-up", "label": "Follow Up", "color": "#10b981", "order": 4 },
+        { "name": "negotiation", "label": "Negotiation", "color": "#ef4444", "order": 5 },
+        { "name": "converted", "label": "Converted", "color": "#22c55e", "order": 6 },
+        { "name": "lost", "label": "Lost", "color": "#64748b", "order": 7 }
+      ],
+      "fields": [
+        { "name": "name", "label": "Name", "type": "text", "required": true },
+        { "name": "email", "label": "Email", "type": "email", "required": true },
+        { "name": "phone", "label": "Phone", "type": "phone", "required": true },
+        { "name": "dateOfBirth", "label": "Date of Birth", "type": "date", "required": false },
+        { "name": "interestedIn", "label": "Interested In", "type": "multiselect", "required": true,
+          "options": ["Auto", "Home", "Life", "Health", "Business", "Umbrella"] },
+        { "name": "currentCarrier", "label": "Current Carrier", "type": "text", "required": false },
+        { "name": "currentPremium", "label": "Current Premium", "type": "currency", "required": false },
+        { "name": "renewalDate", "label": "Current Policy Renewal", "type": "date", "required": false },
+        { "name": "source", "label": "Lead Source", "type": "select", "required": false,
+          "options": ["Website", "Referral", "Cold Call", "Social Media", "Event", "Partner", "Other"] }
+      ]
+    },
+    "transaction": {
+      "singular": "Sale",
+      "plural": "Sales",
+      "icon": "file-text",
+      "description": "Policy sales and applications",
+      "stages": [
+        { "name": "application", "label": "Application", "color": "#3b82f6", "order": 1 },
+        { "name": "underwriting", "label": "Underwriting", "color": "#8b5cf6", "order": 2 },
+        { "name": "approval", "label": "Approval", "color": "#10b981", "order": 3 },
+        { "name": "payment-pending", "label": "Payment Pending", "color": "#f59e0b", "order": 4 },
+        { "name": "issued", "label": "Policy Issued", "color": "#22c55e", "order": 5 },
+        { "name": "declined", "label": "Declined", "color": "#ef4444", "order": 6 },
+        { "name": "cancelled", "label": "Cancelled", "color": "#64748b", "order": 7 }
+      ],
+      "fields": [
+        { "name": "policyId", "label": "Policy", "type": "reference", "reference": "primary", "required": true },
+        { "name": "clientId", "label": "Client", "type": "reference", "reference": "lead", "required": true },
+        { "name": "applicationDate", "label": "Application Date", "type": "date", "required": true },
+        { "name": "quotedPremium", "label": "Quoted Premium", "type": "currency", "required": true },
+        { "name": "finalPremium", "label": "Final Premium", "type": "currency", "required": false },
+        { "name": "commissionRate", "label": "Commission Rate (%)", "type": "number", "required": false },
+        { "name": "commissionAmount", "label": "Commission Amount", "type": "currency", "required": false },
+        { "name": "issueDate", "label": "Issue Date", "type": "date", "required": false },
+        { "name": "underwriter", "label": "Underwriter", "type": "text", "required": false }
+      ]
+    },
+    "contact": {
+      "singular": "Contact",
+      "plural": "Contacts",
+      "icon": "user",
+      "description": "Clients, carriers, and partners"
+    },
+    "agent": {
+      "singular": "Broker",
+      "plural": "Brokers",
+      "icon": "user-check",
+      "description": "Insurance brokers and agents"
+    }
+  },
+  "terminology": {
+    "agent": "Broker",
+    "client": "Policyholder",
+    "deal": "Sale",
+    "pipeline": "Sales Pipeline",
+    "commission": "Commission",
+    "appointment": "Consultation"
+  },
+  "features": {
+    "appointments": {
+      "enabled": true,
+      "types": ["Initial Consultation", "Policy Review", "Renewal Meeting", "Claims Assistance"]
+    },
+    "documents": {
+      "enabled": true,
+      "types": ["Application", "Policy Document", "Quote", "Declaration Page", "Claims Form"]
+    },
+    "communications": {
+      "enabled": true,
+      "channels": ["email", "sms", "phone", "slack"]
+    },
+    "analytics": {
+      "enabled": true,
+      "metrics": ["Total Premium Written", "Commission Earned", "Policies Sold", "Renewal Rate", "Loss Ratio"]
+    }
+  },
+  "integrations": {
+    "carriers": { "enabled": false, "description": "Insurance carrier API integration" },
+    "quoting": { "enabled": false, "description": "Multi-carrier quoting system" },
+    "docusign": { "enabled": false, "description": "Digital document signing" },
+    "slack": { "enabled": true, "description": "Team communication" }
+  }
+}
