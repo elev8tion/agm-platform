@@ -15,11 +15,12 @@ export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  title?: string;
   children: ReactNode;
   footer?: ReactNode;
   size?: ModalSize;
   className?: string;
+  showHeader?: boolean;
 }
 
 const sizeStyles: Record<ModalSize, string> = {
@@ -37,7 +38,8 @@ export function Modal({
   children,
   footer,
   size = 'md',
-  className
+  className,
+  showHeader = true
 }: ModalProps) {
   useEffect(() => {
     if (!isOpen) return;
@@ -85,22 +87,22 @@ export function Modal({
           className
         )}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-          <h2 id="modal-title" className="text-xl font-semibold text-slate-100">
-            {title}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-slate-800 transition-colors"
-            aria-label="Close modal"
-          >
-            <X className="w-5 h-5 text-slate-400" />
-          </button>
-        </div>
+        {showHeader && title && (
+          <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+            <h2 id="modal-title" className="text-xl font-semibold text-slate-100">
+              {title}
+            </h2>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-slate-800 transition-colors"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5 text-slate-400" />
+            </button>
+          </div>
+        )}
 
-        <div className="px-6 py-6">
-          {children}
-        </div>
+        {children}
 
         {footer && (
           <div className="px-6 py-4 border-t border-white/10">
