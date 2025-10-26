@@ -47,15 +47,43 @@ class AgentService:
     ) -> Dict[str, Any]:
         """Execute an agent job"""
         try:
+            # Import WebSocket functions from api.websocket
+            from api.websocket import sio
+
             # Update status to running
             job.status = JobStatus.RUNNING
             job.started_at = datetime.utcnow()
             await db.commit()
 
+            # Broadcast job started event (to ALL connected clients)
+            await sio.emit('job_started', {
+                'job_id': str(job.id),
+                'agent_type': job.agent_type.value,
+                'status': 'running',
+                'message': f'🚀 {job.agent_type.value} agent starting...'
+            })
+            logger.info(f"WebSocket: Broadcasted job_started for {job.id}")
+
+            await sio.emit('job_thinking', {
+                'job_id': str(job.id),
+                'thought': 'Initializing agent...',
+                'icon': '🤔'
+            })
+
             # Route to appropriate agent
             if job.agent_type == AgentType.SEO_WRITER:
+                await sio.emit('job_progress', {
+                    'job_id': str(job.id),
+                    'progress': 20,
+                    'message': 'SEO Writer agent processing...'
+                })
                 result = await self._execute_seo_writer(job)
             elif job.agent_type == AgentType.EMAIL_MARKETER:
+                await sio.emit('job_progress', {
+                    'job_id': str(job.id),
+                    'progress': 20,
+                    'message': 'Email Marketer agent processing...'
+                })
                 result = await self._execute_email_marketer(job)
             else:
                 raise ValueError(f"Unknown agent type: {job.agent_type}")
@@ -70,6 +98,15 @@ class AgentService:
             await db.commit()
             await db.refresh(job)
 
+            # Broadcast completion event
+            await sio.emit('job_completed', {
+                'job_id': str(job.id),
+                'status': 'completed',
+                'result': result,
+                'message': '✅ Agent completed successfully!'
+            })
+            logger.info(f"WebSocket: Broadcasted job_completed for {job.id}")
+
             logger.info(f"Job {job.id} completed successfully")
             return result
 
@@ -79,7 +116,34 @@ class AgentService:
             job.completed_at = datetime.utcnow()
             job.error_message = str(e)
             await db.commit()
+
+            # Broadcast failure event
+            from api.websocket import sio
+            await sio.emit('job_failed', {
+                'job_id': str(job.id),
+                'status': 'failed',
+                'error': str(e),
+                'message': '❌ Agent failed'
+            })
+            logger.error(f"WebSocket: Broadcasted job_failed for {job.id}")
             raise
+
+    async def execute_job_by_id(
+        self,
+        db: AsyncSession,
+        job_id: str
+    ) -> Dict[str, Any]:
+        """Execute a job by fetching it from database first"""
+        # Fetch job from database
+        result = await db.execute(
+            select(AgentJob).where(AgentJob.id == job_id)
+        )
+        job = result.scalar_one_or_none()
+
+        if not job:
+            raise ValueError(f"Job {job_id} not found")
+
+        return await self.execute_job(db, job)
 
     async def get_job(
         self,

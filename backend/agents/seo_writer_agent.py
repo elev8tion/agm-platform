@@ -70,7 +70,7 @@ Provide:
 5. Suggested internal/external resources"""
 
         try:
-            response = await self.client.chat.completions.acreate(
+            response = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": self.get_system_prompt()},
@@ -134,7 +134,7 @@ Requirements:
 
         try:
             # Draft
-            draft_response = await self.client.chat.completions.acreate(
+            draft_response = await self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": self.get_system_prompt()},
@@ -157,7 +157,7 @@ Improvements needed:
 - Add meta description
 - Ensure readability and engagement"""
 
-            polish_response = await self.client.chat.completions.acreate(
+            polish_response = await self.client.chat.completions.create(
                 model="gpt-4o",
                 messages=[
                     {"role": "system", "content": "You are an expert content editor and SEO specialist."},

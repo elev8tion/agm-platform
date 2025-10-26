@@ -152,10 +152,10 @@ async def connect(sid, environ, auth):
             logger.info(f"Development connection (no auth): {sid}")
             await manager.connect(sid, "dev-user", "dev@example.com")
 
-            await sio.emit('connected', {
-                'message': 'Connected to Agentic Marketing Dashboard (dev mode)',
-                'user_id': "dev-user",
-                'timestamp': datetime.utcnow().isoformat()
+            # Emit welcome message to match frontend expectations
+            await sio.emit('welcome', {
+                'message': 'Welcome to Agentic Marketing AI',
+                'sid': sid
             }, room=sid)
 
             return True

@@ -47,10 +47,11 @@ async def research_topic(
         )
 
         # Queue background task
+        job_id = job.id
         async def execute_research():
             from config.database import AsyncSessionLocal
             async with AsyncSessionLocal() as session:
-                await agent_service.execute_job(session, job)
+                await agent_service.execute_job_by_id(session, job_id)
 
         background_tasks.add_task(execute_research)
 
@@ -98,10 +99,12 @@ async def write_content(
             }
         )
 
+        # Queue background task with job_id
+        job_id = job.id
         async def execute_write():
             from config.database import AsyncSessionLocal
             async with AsyncSessionLocal() as session:
-                await agent_service.execute_job(session, job)
+                await agent_service.execute_job_by_id(session, job_id)
 
         background_tasks.add_task(execute_write)
 
@@ -148,10 +151,12 @@ async def optimize_content(
             }
         )
 
+        # Queue background task with job_id
+        job_id = job.id
         async def execute_optimize():
             from config.database import AsyncSessionLocal
             async with AsyncSessionLocal() as session:
-                await agent_service.execute_job(session, job)
+                await agent_service.execute_job_by_id(session, job_id)
 
         background_tasks.add_task(execute_optimize)
 
@@ -197,10 +202,12 @@ async def review_performance(
             }
         )
 
+        # Queue background task with job_id
+        job_id = job.id
         async def execute_review():
             from config.database import AsyncSessionLocal
             async with AsyncSessionLocal() as session:
-                await agent_service.execute_job(session, job)
+                await agent_service.execute_job_by_id(session, job_id)
 
         background_tasks.add_task(execute_review)
 
