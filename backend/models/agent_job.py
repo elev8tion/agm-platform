@@ -22,10 +22,14 @@ class JobStatus(str, enum.Enum):
     """Job status enum"""
 
     PENDING = "pending"
+    QUEUED = "queued"
     RUNNING = "running"
+    PAUSED = "paused"
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    RETRYING = "retrying"
+    DEAD = "dead"  # Moved to dead letter queue
 
 
 class AgentJob(BaseModel):
@@ -53,6 +57,11 @@ class AgentJob(BaseModel):
     # Job data
     input_data = Column(JSON, nullable=False)
     output_data = Column(JSON)
+    command = Column(String, nullable=True)  # Command name (research, write, etc.)
+
+    # Priority and progress
+    priority = Column(Float, default=5.0, index=True)  # 1-10, higher = more urgent
+    progress = Column(Float, default=0)  # 0-100 percentage
 
     # Execution tracking
     started_at = Column(DateTime)
@@ -61,10 +70,24 @@ class AgentJob(BaseModel):
     # Error handling
     error_message = Column(Text)
     retry_count = Column(Float, default=0)
+    max_retries = Column(Float, default=3)
 
     # Cost tracking
     tokens_used = Column(Float, default=0)
     cost = Column(Float, default=0.0)
+
+    # Metadata
+    user_id = Column(String, nullable=True, index=True)  # For user association
+
+    # Queue management (Document 10)
+    scheduled_at = Column(DateTime, nullable=True)  # For delayed jobs
+    deadline = Column(DateTime, nullable=True)  # Job must complete by this time
+    depends_on_job_id = Column(String(36), nullable=True, index=True)  # Dependency
+    worker_id = Column(String, nullable=True)  # Which worker is processing
+    heartbeat_at = Column(DateTime, nullable=True)  # Last heartbeat
+    queue_time_seconds = Column(Float, nullable=True)  # Time in queue
+    execution_time_seconds = Column(Float, nullable=True)  # Execution duration
+    last_error = Column(String, nullable=True)  # Last error message
 
     # Relationships
     content_assets = relationship(

@@ -7,7 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from config.settings import settings
 from config.database import init_db, close_db
 from config.logging import logger
-from api.routes import health, seo_routes, email_routes, cmo_routes
+from api.routes import health, seo_routes, email_routes, cmo_routes, job_routes, budget_routes
+from api.websocket import socket_app, get_websocket_stats
 
 
 @asynccontextmanager
@@ -22,6 +23,8 @@ async def lifespan(app: FastAPI):
     # Initialize database
     await init_db()
     logger.info("Database initialized")
+
+    logger.info("Application started successfully")
 
     yield
 
@@ -55,6 +58,8 @@ app.include_router(health.router)
 app.include_router(seo_routes.router)
 app.include_router(email_routes.router)
 app.include_router(cmo_routes.router)
+app.include_router(job_routes.router)
+app.include_router(budget_routes.router)
 
 
 @app.get("/")
@@ -64,7 +69,18 @@ async def root():
         "message": f"Welcome to {settings.APP_NAME}",
         "version": settings.APP_VERSION,
         "docs": "/docs",
+        "websocket": "/socket.io"
     }
+
+
+@app.get("/websocket/stats")
+async def websocket_stats():
+    """WebSocket server statistics"""
+    return await get_websocket_stats()
+
+
+# Mount Socket.IO app
+app.mount("/", socket_app)
 
 
 if __name__ == "__main__":

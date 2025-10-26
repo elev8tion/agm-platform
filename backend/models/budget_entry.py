@@ -38,8 +38,17 @@ class BudgetEntry(BaseModel):
     tokens_used = Column(Float, default=0)
     model_used = Column(String(100))
 
+    # Token breakdown for chat completions
+    prompt_tokens = Column(Float, default=0)
+    completion_tokens = Column(Float, default=0)
+
+    # Search usage
+    web_search_calls = Column(Float, default=0)
+    file_search_calls = Column(Float, default=0)
+
     # Context
     description = Column(String(500))
+    user_id = Column(String(36), index=True, nullable=True)  # For user association
 
     # Foreign keys (SQLite uses String UUIDs)
     agent_job_id = Column(
